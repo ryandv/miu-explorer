@@ -17,10 +17,10 @@ cabal-version:       >=1.10
 
 executable mu-explorer
   main-is: Main.hs
-  other-modules:
-  other-extensions:
+  --other-modules:
+  --other-extensions:
   build-depends:
     base >=4.6.0.0 && <4.8.0.0,
     happstack-server >= 7.0.2
-  hs-source-dirs:      
+  hs-source-dirs: src
   default-language:    Haskell2010
