@@ -29,3 +29,13 @@ main = hspec $ do
 
     it "returns the empty list when no applications are possible" $ do
       miuRuleThree [M,M,M] `shouldBe` []
+
+  describe "miuRuleFour" $ do
+    it "removes instances of UU from a given string" $ do
+      miuRuleFour [M,I,U,U,I,M] `shouldBe` [[M,I,I,M]]
+
+    it "returns a list of values if multiple different applications are possible" $ do
+      miuRuleFour [M,U,U,I,U,U,U,M] `shouldBe` [[M,I,U,U,U,M], [M,U,U,I,U,M], [M,U,U,I,U,M]]
+
+    it "returns the empty list when no applications are possible" $ do
+      miuRuleFour [M,M,M,M] `shouldBe` []

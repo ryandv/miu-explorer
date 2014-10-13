@@ -25,7 +25,7 @@ miuRuleTwo (M:xs) = Just $ [M] ++ xs ++ xs
 miuRuleTwo _      = Nothing
 
 miuRuleThree      :: MiuString -> [MiuString]
-miuRuleThree xs   = fmap (replaceBlock xs) (findSubstring [I,I,I] xs) where 
+miuRuleThree xs   = fmap (replaceBlock xs) (findSubstring [I,I,I] xs) where
 
     replaceBlock      :: MiuString -> Int -> MiuString
     replaceBlock ys i = let prefix = take i ys
@@ -33,12 +33,13 @@ miuRuleThree xs   = fmap (replaceBlock xs) (findSubstring [I,I,I] xs) where
                                prefix ++ [U] ++ suffix
 
 
-miuRuleFour       :: MiuString -> Maybe MiuString
-miuRuleFour xs    | [U,U] `elem` blocks  = Just $ concat $ delete [U,U] blocks
-                  | otherwise            = Nothing where
+miuRuleFour        :: MiuString -> [MiuString]
+miuRuleFour xs     = fmap (removeBlock xs) (findSubstring [U,U] xs) where
+  removeBlock      :: MiuString -> Int -> MiuString
+  removeBlock ys i = let prefix = take i ys
+                         suffix = drop (i + 2) ys in
+                           prefix ++ suffix
 
-  blocks :: [MiuString]
-  blocks = group xs
 
 data KmpState = KmpState
   { sourceString   :: MiuString
