@@ -5,14 +5,27 @@ module Miu.System(
   , miuRuleTwo
   , miuRuleThree
   , miuRuleFour
+  , generateTheorems
   ) where
 
+import Control.Applicative
 import Control.Monad.Trans.State
 
-import Data.List
+import Data.Tree
 
 data MiuSymbol = M | I | U deriving(Eq, Show)
 type MiuString = [MiuSymbol]
+
+treetop 1 (Node a f) = Node a []
+treetop n (Node a f) = Node a (map (treetop (n-1)) f)
+
+generateTheoremTree           :: Int -> [MiuString] -> Tree MiuString
+generateTheoremTree           = undefined
+--generateTheoremTree 1 
+--generateTheoremTree n axioms  = unfoldTreeM_BF (\x -> (show x, concat $ [miuRuleOne, miuRuleTwo, miuRuleThree, miuRuleFour] <*> return x)) $ axioms
+
+generateTheorems        :: [MiuString] -> [MiuString]
+generateTheorems axioms = concat . iterate (concat . ([miuRuleOne, miuRuleTwo, miuRuleThree, miuRuleFour] <*>)) $ axioms
 
 miuRuleOne        :: MiuString -> [MiuString]
 miuRuleOne (x:[]) | x == I    = return [I,U]
