@@ -23,4 +23,4 @@ main = hspec $ do
   describe "miuRuleThree" $ do
     it "replaces the first instance of III with U" $ do
       miuRuleThree [U,M,I,I,I,M,U] `shouldBe` Just [U,M,U,M,U]
-      miuRuleThree [M,I,I,I,I] `shouldBe` Just [M,I,U]
+      miuRuleThree [M,I,I,I,I] `shouldBe` Just [M,U,I]

@@ -47,14 +47,3 @@ kmpAlgorithm = do
       else do
         put $ s { currentOffset = j + 1 }
         kmpAlgorithm
-
---
---kmpAlgorithm (w:[]) (s:[]) | w == s    = do
---  resultIndex <- get
---  return . Just . fst $ resultIndex
---                           | otherwise = return Nothing
---
---kmpAlgorithm _ []          = return Nothing
---
---kmpAlgorithm (w:ws) (s:ss) | w == s    = do
---  modify 
