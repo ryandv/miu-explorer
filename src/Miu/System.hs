@@ -14,15 +14,15 @@ import Data.List
 data MiuSymbol = M | I | U deriving(Eq, Show)
 type MiuString = [MiuSymbol]
 
-miuRuleOne        :: MiuString -> Maybe MiuString
-miuRuleOne (x:[]) | x == I    = Just [I,U]
-                  | otherwise = Nothing
-miuRuleOne []     = Nothing
+miuRuleOne        :: MiuString -> [MiuString]
+miuRuleOne (x:[]) | x == I    = return [I,U]
+                  | otherwise = []
+miuRuleOne []     = []
 miuRuleOne (x:xs) = miuRuleOne xs >>= (\ys -> return $ x:ys)
 
-miuRuleTwo        :: MiuString -> Maybe MiuString
-miuRuleTwo (M:xs) = Just $ [M] ++ xs ++ xs
-miuRuleTwo _      = Nothing
+miuRuleTwo        :: MiuString -> [MiuString]
+miuRuleTwo (M:xs) = return $ [M] ++ xs ++ xs
+miuRuleTwo _      = []
 
 miuRuleThree      :: MiuString -> [MiuString]
 miuRuleThree xs   = fmap (replaceBlock xs) (findSubstring [I,I,I] xs) where

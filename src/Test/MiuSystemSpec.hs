@@ -8,17 +8,17 @@ main = hspec $ do
 
   describe "miuRuleOne" $ do
     it "appends a U to strings ending in I" $ do
-      miuRuleOne [M,I] `shouldBe` Just [M,I,U]
+      miuRuleOne [M,I] `shouldBe` [[M,I,U]]
 
-    it "returns Nothing for strings not ending in I" $ do
-      miuRuleOne [M] `shouldBe` Nothing
-      miuRuleOne [U] `shouldBe` Nothing
+    it "returns the empty list for strings not ending in I" $ do
+      miuRuleOne [M] `shouldBe` []
+      miuRuleOne [U] `shouldBe` []
 
   describe "miuRuleTwo" $ do
     it "duplicates the substring following the initial letter M" $ do
-      miuRuleTwo [M,I,U] `shouldBe` Just [M,I,U,I,U]
-      miuRuleTwo [M,U,M] `shouldBe` Just [M,U,M,U,M]
-      miuRuleTwo [M,U] `shouldBe` Just [M,U,U]
+      miuRuleTwo [M,I,U] `shouldBe` [[M,I,U,I,U]]
+      miuRuleTwo [M,U,M] `shouldBe` [[M,U,M,U,M]]
+      miuRuleTwo [M,U] `shouldBe` [[M,U,U]]
 
   describe "miuRuleThree" $ do
     it "replaces instances of III with U" $ do
