@@ -48,9 +48,11 @@ main = hspec $ do
 
   describe "findSubstring" $ do
     it "returns the index of the requested substring if a match is found" $ do
-      findSubstring [M] [M] `shouldBe` Just 0
-      findSubstring [U,U] [M,I,U,U,I,M] `shouldBe` Just 2
-      findSubstring [I,I,I] [I,I,M,I,I,I,M] `shouldBe` Just 3
+      findSubstring [M] [M] `shouldBe` [0]
+      findSubstring [U,U] [M,I,U,U,I,M] `shouldBe` [2]
 
-    it "returns Nothing otherwise" $
-      findSubstring [M,M,M] [U,U,U] `shouldBe` Nothing
+    it "returns a list of indices if multiple matches are found" $ do
+      findSubstring [I,I,I] [I,I,M,I,I,I,I,I,M,I,I,I] `shouldBe` [3,4,5,9]
+
+    it "returns an empty list otherwise" $
+      findSubstring [M,M,M] [U,U,U] `shouldBe` []
