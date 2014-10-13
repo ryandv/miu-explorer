@@ -56,40 +56,37 @@ kmpFailureFunction 1 _  = 0
 kmpFailureFunction i xs | (xs !! kmpFailureFunction (i-1) xs) == (xs !! (i-1)) = 1 + kmpFailureFunction (i-1) xs
                         | otherwise = 0
 
-kmpDelta                :: MiuSymbol -> MiuSymbol -> KmpState -> KmpState
-kmpDelta x y s          | x == y    = s { automatonState = 1 + automatonState s
-                                        , currentOffset  = 1 + currentOffset s
-                                        }
-                        | otherwise = case automatonState s of
-                                        0 -> s { currentOffset = 1 + currentOffset s }
-                                        _ -> s { automatonState = kmpFailureFunction (automatonState s) $ pattern s }
+kmpDelta                              :: KmpState -> KmpState
+kmpDelta s@(KmpState { automatonState = i
+                     , currentOffset  = j
+                     , sourceString   = src
+                     , pattern        = pat
+                     })               | j == length src            = s { automatonState = i - 1 }
+                                      | null src || null pat       = s
+                                      | (src !! j) == (pat !! i)   = if i == length pat - 1 then s else
+                                                                       kmpDelta $ s { automatonState = 1 + i
+                                                                                    , currentOffset  = 1 + j
+                                                                                    }
+                                      | otherwise                  = case i of
+                                                                       0 -> kmpDelta $ s { currentOffset = 1 + j }
+                                                                       _ -> kmpDelta $ s { automatonState = kmpFailureFunction i pat }
 
 kmpStateIsAccepting     :: KmpState -> Bool
 kmpStateIsAccepting s   | automatonState s == (length (pattern s) - 1) = True
-                        | currentOffset s == length (sourceString s)   = True
                         | otherwise                                    = False
 
--- too imperative; refactor in terms of an automaton
 kmpAlgorithm :: State KmpState [Int]
 kmpAlgorithm = do
   s <- get
 
-  let i = automatonState s
-  let j = currentOffset s
-  let src = sourceString s
-  let pat = pattern s
+  let finalState = kmpDelta s
 
-  if (j == length src) || null src then return [] else do
-
-    modify $ kmpDelta (src !! j) (pat !! i)
-
-    if (src !! j) == (pat !! i) then do
-      if i == (length pat - 1) then do
-        put $ s { automatonState = 0
-                , currentOffset  = j - i + 1
-                }
+  let i = automatonState finalState
+  let j = currentOffset finalState
+  if kmpStateIsAccepting finalState then do
+        put $ finalState { automatonState = 0
+                         , currentOffset  = j - i + 1
+                         }
         otherMatches <- kmpAlgorithm
         return $ (j-i):otherMatches
-      else kmpAlgorithm
-    else do
-      kmpAlgorithm
+  else return []
