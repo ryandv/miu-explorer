@@ -22,5 +22,10 @@ main = hspec $ do
 
   describe "miuRuleThree" $ do
     it "replaces the first instance of III with U" $ do
-      miuRuleThree [U,M,I,I,I,M,U] `shouldBe` Just [U,M,U,M,U]
-      miuRuleThree [M,I,I,I,I] `shouldBe` Just [M,U,I]
+      miuRuleThree [U,M,I,I,I,M,U] `shouldBe` [[U,M,U,M,U]]
+
+    it "returns a list of values if multiple different applications are possible" $ do
+      miuRuleThree [M,I,I,I,I] `shouldBe` [[M,U,I], [M,I,U]]
+
+    it "returns the empty list when no applications are possible" $ do
+      miuRuleThree [M,M,M] `shouldBe` []

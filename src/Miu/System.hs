@@ -24,12 +24,13 @@ miuRuleTwo        :: MiuString -> Maybe MiuString
 miuRuleTwo (M:xs) = Just $ [M] ++ xs ++ xs
 miuRuleTwo _      = Nothing
 
-miuRuleThree      :: MiuString -> Maybe MiuString
-miuRuleThree xs   = do
-  blockIndex <- findSubstring [I,I,I] xs
-  let prefix = take blockIndex xs
-  let suffix = drop (blockIndex + 3) xs
-  return $ prefix ++ [U] ++ suffix
+miuRuleThree      :: MiuString -> [MiuString]
+miuRuleThree xs   = fmap (replaceBlock xs) (findSubstring [I,I,I] xs) where 
+
+    replaceBlock      :: MiuString -> Int -> MiuString
+    replaceBlock ys i = let prefix = take i ys
+                            suffix = drop (i + 3) ys in
+                               prefix ++ [U] ++ suffix
 
 
 miuRuleFour       :: MiuString -> Maybe MiuString
@@ -46,7 +47,7 @@ data KmpState = KmpState
   , currentOffset  :: Int
   }
 
-findSubstring      :: MiuString -> MiuString -> Maybe Int
+findSubstring      :: MiuString -> MiuString -> [Int]
 findSubstring w s  = evalState kmpAlgorithm $ KmpState s w 0 0
 
 kmpFailureFunction      :: Eq a => Int -> [a] -> Int
@@ -56,7 +57,7 @@ kmpFailureFunction i xs | (xs !! kmpFailureFunction (i-1) xs) == (xs !! (i-1)) =
                         | otherwise = 0
 
 -- too imperative; refactor in terms of an automaton
-kmpAlgorithm :: State KmpState (Maybe Int)
+kmpAlgorithm :: State KmpState [Int]
 kmpAlgorithm = do
   s <- get
 
@@ -65,13 +66,19 @@ kmpAlgorithm = do
   let src = sourceString s
   let pat = pattern s
 
-  if j == length src then return Nothing else
+  if (j == length src) || null src then return [] else
 
     if (src !! j) == (pat !! i) then do
       put $ s { automatonState = i + 1
               , currentOffset  = j + 1
               }
-      if i == (length pat - 1) then return $ Just (j - i) else kmpAlgorithm
+      if i == (length pat - 1) then do
+        put $ s { automatonState = 0
+                , currentOffset  = j - i + 1
+                }
+        otherMatches <- kmpAlgorithm
+        return $ (j-i):otherMatches
+      else kmpAlgorithm
     else
       if i > 0 then do
         put $ s { automatonState = kmpFailureFunction i pat }
