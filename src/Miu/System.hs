@@ -1,4 +1,11 @@
-module Miu.System where
+module Miu.System(
+    MiuSymbol(..)
+  , MiuString
+  , miuRuleOne
+  , miuRuleTwo
+  , miuRuleThree
+  , miuRuleFour
+  ) where
 
 import Data.List
 
@@ -6,12 +13,9 @@ data MiuSymbol = M | I | U deriving(Eq, Show)
 type MiuString = [MiuSymbol]
 
 miuRuleOne        :: MiuString -> Maybe MiuString
-miuRuleOne (I:[]) = Just [I,U]
-
-miuRuleOne (M:[]) = Nothing
-miuRuleOne (U:[]) = Nothing
+miuRuleOne (x:[]) | x == I    = Just [I,U]
+                  | otherwise = Nothing
 miuRuleOne []     = Nothing
-
 miuRuleOne (x:xs) = miuRuleOne xs >>= (\ys -> return $ x:ys)
 
 miuRuleTwo        :: MiuString -> Maybe MiuString
@@ -30,9 +34,9 @@ miuRuleThree xs   = replaceBlock blocks where
     let splits = splitAt blockIndex ys
     return $ concat (fst splits) ++ [U] ++ concat (tail $ snd splits)
 
---miuRuleFour       :: MiuString -> Maybe MiuString
---miuRuleFour xs    | [U,U] `elem` blocks  = Just $ concat $ delete [U,U] blocks
---                  | otherwise            = Nothing where
---
---  blocks :: [MiuString]
---  blocks = group xs
+miuRuleFour       :: MiuString -> Maybe MiuString
+miuRuleFour xs    | [U,U] `elem` blocks  = Just $ concat $ delete [U,U] blocks
+                  | otherwise            = Nothing where
+
+  blocks :: [MiuString]
+  blocks = group xs
